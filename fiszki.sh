@@ -14,6 +14,14 @@ speak() {
   fi
 }
 
+speak2() {
+  if $voice_enabled; then
+    local text="$1"
+    local lang="${2:-en}"  
+    espeak -v "$lang" "$text" &
+  fi
+}
+
 start_learning() {
   if [[ ${#word_pairs[@]} -eq 0 ]]; then
     echo "Brak słówek do nauki. Wczytaj je najpierw."
@@ -33,11 +41,11 @@ start_learning() {
     read -p "Przetłumacz: $native_word → " answer
 
     answer=$(echo "$answer" | xargs | tr '[:upper:]' '[:lower:]')
-    foreign_word=$(echo "$foreign_word" | xargs | tr '[:upper:]' '[:lower:]')
+    foreign_word_clean=$(echo "$foreign_word" | xargs | tr '[:upper:]' '[:lower:]')
 
-    if [[ "$answer" == "$foreign_word" ]]; then
-      speak "$native_word" "pl"
+    if [[ "$answer" == "$foreign_word_clean" ]]; then
       echo "✅ Poprawnie!"
+      speak "$foreign_word" "en"  # Dodajemy wymowę angielskiego tłumaczenia
       ((correct++))
       ((all_good++))  # Zwiększa statystykę dla całej sesji
     else
